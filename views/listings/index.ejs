@@ -1,0 +1,209 @@
+
+
+<% layout("/Layout/boilerplate") -%>
+
+
+<style>
+#filters{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filter{
+    text-align: center;
+    margin-right: 1rem;
+    margin-top: 1rem;
+    opacity: 0.7;
+}
+
+.filter:hover{
+    opacity: 1;
+    cursor: pointer;
+}
+
+.filter p{
+    font-size: 0.8rem;
+}
+
+
+.switch{
+    margin-left: 5rem;
+    border: 1px solid black;
+    border-radius: 9px;
+    padding: 0.7rem;
+}
+.tax-info{
+ display:none;
+
+}
+</style>
+
+    
+
+
+
+<div id="filters">
+<div class="filter" data-filter="trending">
+    <div><i class="fa-solid fa-fire"></i></div>
+    <p >Trending</p>
+</div>
+
+<div class="filter" data-filter="rooms">
+    <div><i class="fa-solid fa-bed"></i></div>
+    <p>Rooms</p>
+</div>
+
+<div class="filter" data-filter="iconic">
+    <div><i class="fa-solid fa-mountain-city"></i></div>
+    <p>Iconic cities</p>
+</div>
+
+<div class="filter" data-filter="mountains">
+    <div><i class="fa-brands fa-fort-awesome"></i></div>
+    <p>Mountains</p>
+</div>
+
+<div class="filter" data-filter="castles">
+    <div><i class="fa-solid fa-fire"></i></div>
+    <p> Castles </p>
+</div>
+
+
+
+<div class="filter" data-filter="pools">
+    <div><i class="fa-solid fa-water-ladder"></i></div>
+    <p>Amazing pools</p>
+</div>
+
+<div class="filter" data-filter="compaign">
+    <div><i class="fa-solid fa-building"></i></div>
+    <p>Compaign</p>
+</div>
+
+<div class="filter" data-filter="arctic">
+    <div><i class="fa-solid fa-snowflake"></i></div>
+    <p>Arctic</p>
+</div>
+
+<div class="filter" data-filter="domes">
+    <div><i class="fa-solid fa-igloo"></i></div>
+    <p>Domes</p>
+</div>
+
+
+
+
+
+<div class="switch">
+    <div class="form-check-reverse form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+        <label class="form-check-label" for="flexSwitchCheckDefault">Display total  after taxes</label>
+      </div>
+</div>
+</div>
+
+
+
+<div class="result">
+    <!-- Filtered listings will be inserted here by JavaScript -->
+</div>
+
+
+
+
+    <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-2" id="listing">
+        <% for(list of lists) { %>
+            <a href="/listings/<%= list._id %>">
+                <div class="card col-1 listing-card" style="width: 15rem;">
+                    <img src="<%= list.image.url%>" class="card-img-top" alt="listing-image"  style="height:20rem;" >
+                    <div class="card-body">
+                      <p class="card-text"><b><%= list.title %></b> <br>
+                        &#8377; <%= list.price.toLocaleString("en-IN")%>/night
+                        <i class="tax-info">&nbsp; +18%GST</i>
+                    </p>
+                    </div>
+                  </div>
+            </a>
+        <% }  %>
+        </div>
+
+    
+
+
+  
+    
+   
+
+
+
+
+    <script>
+        let taxSwitch = document.getElementById("flexSwitchCheckDefault");
+     
+     
+        taxSwitch.addEventListener("click", () => {
+            let taxinfo = document.getElementsByClassName("tax-info");
+            for (info of taxinfo) {
+                info.style.display = (info.style.display !== "inline") ? "inline" : "none";
+            }
+        });
+
+        const filters = document.querySelectorAll('.filter');
+filters.forEach(filter => {
+    filter.addEventListener('click', async (event) => {
+        
+        const filterType = filter.getAttribute('data-filter');
+        console.log("Filter type:", filterType); // Log the filter type
+
+        try {
+            const response=await fetch(`/filter?type=${filterType}`);
+            
+             const data = await response.text(); // Get the HTML response
+             console.log(data);
+            //  console.log("listing data",data);
+            //  dataHtml = `<div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-2">`;
+            //     for(list of data) {
+            //         dataHtml +=`<a href="/listings/${list._id }">
+            //     <div class="card col-1 listing-card" style="width: 15rem;">
+            //         <img src="${ list.image.url}" class="card-img-top" alt="listing-image"  style="height:20rem;" >
+            //         <div class="card-body">
+            //           <p class="card-text"><b>${ list.title }</b> <br>
+            //             &#8377; ${ list.price.toLocaleString("en-IN")}/night
+            //             <i class="tax-info">&nbsp; +18%GST</i>
+            //         </p>
+            //         </div>
+            //       </div>
+            // </a>`;
+            //     }
+            // dataHtml += ` </div>`;
+             const resultContainer = document.querySelector('.result');  // Use querySelector to select the first matching element
+           
+                
+        resultContainer.innerHTML = data; 
+        document.getElementById('listing').style.display = 'none';   // Inject the HTML into the result container
+   
+            
+
+
+        }
+
+
+
+    // Update the listings container
+    //document.querySelector('.row').innerHTML = data; // Assuming your server responds with HTML
+           
+        // Replace the listings section with the new HTML
+        
+          // Update this to your listings container
+        catch (error) {
+            console.error("Error fetching filtered listings:", error);
+        }
+    });
+});
+
+
+    
+      
+    </script>
+    
