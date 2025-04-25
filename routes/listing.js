@@ -27,7 +27,16 @@ const validateError=(req,res,next)=>{
 
 router.route("/")
 .get(wrapAsync(controller.index)) //index route
-.post(loggedIn,upload.single('Listing[image]'),wrapAsync(controller.newListing));//post route
+.post(loggedIn,
+    (req, res, next) => {
+    upload.single('Listing[image]')(req, res, (err) => {
+        if (err) {
+            req.flash("error", "File upload failed: " + err.message);
+            return res.redirect("back");
+        }
+        next();
+    });
+},wrapAsync(controller.newListing));//post route
 
 
 

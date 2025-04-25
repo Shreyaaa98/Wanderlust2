@@ -35,9 +35,17 @@ module.exports.showListing=async (req,res)=>{
 
 module.exports.newListing=async (req, res) => {
     let listing = req.body.Listing;
-    let url = req.file.path;
-    let filename=req.file.filename;
-    console.log(url);
+    if (!req.file) {
+        req.flash("error", "Image upload is required.");
+        return res.redirect("/listings/new"); // Or redirect to the form page
+    }
+   
+        let url = req.file.path;
+        let filename=req.file.filename;
+        console.log(url);
+        console.log(filename);
+    
+   
    
    const newListing = new Listing(listing);
    newListing.owner=req.user._id;

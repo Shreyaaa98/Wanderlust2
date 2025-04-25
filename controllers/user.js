@@ -40,11 +40,25 @@ module.exports.login= async(req,res)=>{
 };
 
 module.exports.logout=(req,res)=>{
-    req.logout((err)=>{
-        if(err){
-            next(err);
-        }
+   
+    console.log(req.signedCookies);
+    req.logout((err) => {
+        if (err) return next(err);
         req.flash("success","you logged out successfully");
-        res.redirect("/listings");
-    })
+        req.session.destroy((err) => {
+            if (err) return next(err);
+            
+            res.clearCookie('connect.sid', {
+                path: '/',
+                httpOnly: true,
+              //  secure: true,  // Only if using HTTPS
+          
+            });
+
+            console.log(req.signedCookies);
+         
+            res.redirect("/listings");
+        });
+    });
+    
 };
